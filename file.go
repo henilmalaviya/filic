@@ -11,7 +11,8 @@ type File struct {
 
 // Create creates an empty file at the specified path. If the file already
 // exists, this method does nothing and returns nil. If the file doesn't exist,
-// it creates an empty file with 0644 permissions (rw-r--r--).
+// it creates an empty file with 0644 permissions (rw-r--r--). Parent directories
+// are automatically created if they don't exist.
 func (f *File) Create() error {
 	if f.Exists() {
 		return nil
