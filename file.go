@@ -16,6 +16,17 @@ func (f *File) Create() error {
 	if f.Exists() {
 		return nil
 	}
+
+	parent := f.OpenParent()
+
+	if !parent.Exists() {
+		err := parent.Create()
+
+		if err != nil {
+			return err
+		}
+	}
+
 	return f.Write([]byte{})
 }
 
