@@ -83,26 +83,6 @@ func main() {
 }
 ```
 
-## API
-
-### Common Methods (File & Directory)
-
-- `Exists() bool` - Check if the path exists
-- `IsDirectory() (bool, error)` - Check if the path is a directory
-- `Join(name string) string` - Join path with a name
-- `OpenParent() Directory` - Get the parent directory
-
-### Directory Methods
-
-- `Create() error` - Create the directory (with parent directories if needed)
-- `OpenDir(name string) (*Directory, error)` - Open a subdirectory
-- `OpenFile(name string) (*File, error)` - Open a file in the directory
-
-### File Methods
-
-- `Create() error` - Create an empty file if it doesn't exist
-- `Write(data []byte) error` - Write data to the file
-
 ## License
 
 MIT

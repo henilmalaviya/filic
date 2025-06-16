@@ -38,6 +38,39 @@ func (f *File) Write(data []byte) error {
 	return os.WriteFile(f.Path, data, 0644)
 }
 
+// Read reads the entire contents of the file and returns it as a byte slice.
+// It returns an error if the file doesn't exist or cannot be read.
+func (f *File) Read() ([]byte, error) {
+	return os.ReadFile(f.Path)
+}
+
+// ReadString reads the entire contents of the file and returns it as a string.
+// It's a convenience method that calls Read() and converts the result to a string.
+// It returns an error if the file doesn't exist or cannot be read.
+func (f *File) ReadString() (string, error) {
+	data, err := f.Read()
+	return string(data), err
+}
+
+// Append appends the provided data to the end of the file. If the file doesn't
+// exist, this method will return an error. The file must already exist before
+// calling this method. Use Create() or Write() to create the file first if needed.
+// The data is appended with write-only permissions.
+func (f *File) Append(data []byte) error {
+	file, err := os.OpenFile(f.Path, os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	_, err = file.Write(data)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // NewFile creates a new File instance with the specified path.
 // The file doesn't need to exist at the time of creation - it can be
 // created later using the Create method or written to using the Write method.
