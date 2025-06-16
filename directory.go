@@ -95,6 +95,75 @@ func (d *Directory) List() ([]string, error) {
 	return names, nil
 }
 
+// ListAsEntities returns a list of all items in the directory as Entity instances.
+// This provides a unified way to work with both files and directories, allowing
+// you to check their type using the IsDirectory method. Returns an error if the
+// directory doesn't exist or cannot be read.
+func (d *Directory) ListAsEntities() ([]Entity, error) {
+	names, err := d.List()
+	if err != nil {
+		return nil, err
+	}
+
+	var entities []Entity
+	for _, name := range names {
+		entity := NewEntity(d.Join(name))
+		entities = append(entities, *entity)
+	}
+
+	return entities, nil
+}
+
+// ListDirectories returns a list of all subdirectories within this directory
+// as Directory instances. Only items that are confirmed to be directories are
+// included in the result. Returns an error if the directory doesn't exist,
+// cannot be read, or if there's an issue checking the type of any item.
+func (d *Directory) ListDirectories() ([]*Directory, error) {
+	entities, err := d.ListAsEntities()
+	if err != nil {
+		return nil, err
+	}
+
+	var directories []*Directory
+	for _, entity := range entities {
+		isDir, err := entity.IsDirectory()
+
+		if err != nil {
+			return nil, err
+		}
+
+		if isDir {
+			directories = append(directories, NewDirectory(entity.Path))
+		}
+	}
+	return directories, nil
+}
+
+// ListFiles returns a list of all files within this directory as File instances.
+// Only items that are confirmed to be files (not directories) are included in
+// the result. Returns an error if the directory doesn't exist, cannot be read,
+// or if there's an issue checking the type of any item.
+func (d *Directory) ListFiles() ([]*File, error) {
+	entities, err := d.ListAsEntities()
+	if err != nil {
+		return nil, err
+	}
+
+	var files []*File
+	for _, entity := range entities {
+		isDir, err := entity.IsDirectory()
+
+		if err != nil {
+			return nil, err
+		}
+
+		if !isDir {
+			files = append(files, NewFile(entity.Path))
+		}
+	}
+	return files, nil
+}
+
 // NewDirectory creates a new Directory instance with the specified path.
 // The directory doesn't need to exist at the time of creation - it can be
 // created later using the Create method.
