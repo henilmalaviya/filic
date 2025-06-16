@@ -79,6 +79,22 @@ func (d *Directory) OpenFile(name string) (*File, error) {
 	return NewFile(path), nil
 }
 
+// List returns a list of all the files and directories in the directory.
+// It returns an error if the directory doesn't exist or cannot be read.
+func (d *Directory) List() ([]string, error) {
+	files, err := os.ReadDir(d.Path)
+	if err != nil {
+		return nil, err
+	}
+
+	var names []string
+	for _, file := range files {
+		names = append(names, file.Name())
+	}
+
+	return names, nil
+}
+
 // NewDirectory creates a new Directory instance with the specified path.
 // The directory doesn't need to exist at the time of creation - it can be
 // created later using the Create method.
